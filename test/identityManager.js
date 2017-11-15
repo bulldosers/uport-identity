@@ -78,7 +78,7 @@ contract('IdentityManager', (accounts) => {
     deployedProxy = await Proxy.new({from: user1})
     testReg = await TestRegistry.new({from: user1})
     testNum = 1
-    data = lightwallet.txutils._encodeFunctionTxData('register', ['uint256'], [1])
+    data = "0x" + lightwallet.txutils._encodeFunctionTxData('register', ['uint256'], [1])
     //   return snapshots.snapshot()
     // }).then(id => {
     //   snapshotId = id
@@ -112,9 +112,6 @@ contract('IdentityManager', (accounts) => {
   it('Correctly creates Identity and calls registry set', async function() {
     let tx = await identityManager.createIdentitySetRegistry(testReg.address, data, user1, recoveryKey, {from: nobody})
     let log = tx.logs[0]
-    console.log('==================')
-    console.log(log)
-    console.log('==================')
     assert.equal(log.event, 'LogIdentityCreated', 'wrong event')
 
     assert.equal(log.args.owner,
@@ -130,6 +127,9 @@ contract('IdentityManager', (accounts) => {
     await compareCode(log.args.identity, deployedProxy.address)
     let proxyOwner = await Proxy.at(log.args.identity).owner.call()
     assert.equal(proxyOwner, identityManager.address, 'Proxy owner should be the identity manager')
+
+    // test that the registry was set
+
   })
 
   describe('existing identity', () => {
